@@ -58,7 +58,7 @@ namespace SerialFtp
             SettingForm settingForm = new SettingForm(portName);
             if (settingForm.ShowDialog() == DialogResult.OK)
             {
-                this.portName = settingForm.serialPort;
+                this.portName = settingForm.portName;
                 Properties.Settings.Default.Save();
             }
         }
@@ -79,8 +79,6 @@ namespace SerialFtp
 		private void listViewRemote_DragDrop(object sender, DragEventArgs e)
 		{
 			string [] files;
-
-			System.Diagnostics.Debug.WriteLine("DragDrop");
 
 			if(e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
@@ -106,8 +104,6 @@ namespace SerialFtp
 		/// </summary>
 		private void listViewRemote_DragEnter(object sender, DragEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine("DragEnter");
-
 			if(e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				// ファイルのドロップである。
