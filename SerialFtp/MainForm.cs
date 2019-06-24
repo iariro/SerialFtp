@@ -7,32 +7,68 @@ using System.Windows.Forms;
 namespace SerialFtp
 {
 	/// <summary>
-	///
+	/// Serial FTPメイン画面
 	/// </summary>
 	public partial class MainForm
 		: Form
 	{
-		private readonly SerialPort port;
+        private string portName;
+		private SerialPort serialPort;
 
 		/// <summary>
-		///
+		/// コンストラクタ
 		/// </summary>
 		public MainForm()
 		{
 			InitializeComponent();
-
-			port = new SerialPort("COM1");
-			port.Open();
 		}
 
+        /// <summary>
+        /// 初期化処理
+        /// 設定値読み込みとポートのオープン
+        /// </summary>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            portName = Properties.Settings.Default.serialPort;
+
+            serialPort = new SerialPort(portName);
+            try
+            {
+                serialPort.Open();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
+        }
+
+        /// <summary>
+        /// メニュー「終了」
+        /// </summary>
+        private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// メニュー「設定」
+        /// </summary>
+        private void 設定ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SettingForm settingForm = new SettingForm(portName);
+            if (settingForm.ShowDialog() == DialogResult.OK)
+            {
+                this.portName = settingForm.serialPort;
+                Properties.Settings.Default.Save();
+            }
+        }
+
 		/// <summary>
-		///
+		/// 画面クローズ
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		private void IToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			port.Close();
+			serialPort.Close();
 			Close();
 		}
 
@@ -40,8 +76,6 @@ namespace SerialFtp
 		/// エクスプローラからリストビューへ、すなわちローカルからリモートへド
 		/// ラッグアンドドロップ。
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		private void listViewRemote_DragDrop(object sender, DragEventArgs e)
 		{
 			string [] files;
@@ -55,7 +89,7 @@ namespace SerialFtp
 				foreach(string file in files)
 				{
 					new PutFileWorker(
-						port,
+						serialPort,
 						file,
 						listViewRemote,
 						toolStripPrgressBarRequest,
@@ -70,8 +104,6 @@ namespace SerialFtp
 		/// エクスプローラからリストビューへ、すなわちローカルからリモートへド
 		/// ラッグアンドドロップ。
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		private void listViewRemote_DragEnter(object sender, DragEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine("DragEnter");
@@ -94,8 +126,6 @@ namespace SerialFtp
 		/// リストビューからエクスプローラへ、すなわちリモートからローカルへド
 		/// ラッグアンドドロップ。
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		private void listViewRemote_ItemDrag(object sender, ItemDragEventArgs e)
 		{
 			string fileName, filePath;
@@ -109,7 +139,7 @@ namespace SerialFtp
 				filesArray.Add(filePath);
 
 				new GetFileWorker(
-					port,
+					serialPort,
 					filePath,
 					fileName,
 					listViewRemote,
@@ -119,28 +149,16 @@ namespace SerialFtp
 		}
 
         /// <summary>
-        ///
+        /// リスト取得
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void リスト取得ToolStripMenuItem_Click
         	(object sender, EventArgs e)
         {
 			new GetFilesWorker(
-				port,
+				serialPort,
 				listViewRemote,
 				toolStripPrgressBarRequest,
 				toolStripProgressBarResponse).RunWorkerAsync();
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Close();
         }
 	}
 }
