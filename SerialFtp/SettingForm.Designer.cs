@@ -86,6 +86,7 @@
             this.MinimizeBox = false;
             this.Name = "SettingForm";
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "設定";
             this.ResumeLayout(false);
             this.PerformLayout();

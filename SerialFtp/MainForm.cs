@@ -12,7 +12,6 @@ namespace SerialFtp
 	public partial class MainForm
 		: Form
 	{
-        private string portName;
 		private SerialPort serialPort;
 
 		/// <summary>
@@ -29,9 +28,7 @@ namespace SerialFtp
         /// </summary>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            portName = Properties.Settings.Default.serialPort;
-
-            serialPort = new SerialPort(portName);
+            serialPort = new SerialPort(Properties.Settings.Default.serialPort);
             try
             {
                 serialPort.Open();
@@ -55,10 +52,10 @@ namespace SerialFtp
         /// </summary>
         private void ê›íËToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            SettingForm settingForm = new SettingForm(portName);
+            SettingForm settingForm = new SettingForm(Properties.Settings.Default.serialPort);
             if (settingForm.ShowDialog() == DialogResult.OK)
             {
-                this.portName = settingForm.portName;
+                Properties.Settings.Default.serialPort = settingForm.portName;
                 Properties.Settings.Default.Save();
             }
         }
